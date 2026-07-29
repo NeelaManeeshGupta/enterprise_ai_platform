@@ -114,13 +114,14 @@ export default function AIChat({
   useEffect(() => {
     if (!selectedSessionId) return
 
+    const sid = selectedSessionId
     async function loadSelectedSession() {
       try {
-        const res = await api.get(`/conversations/${selectedSessionId}`)
+        const res = await api.get(`/conversations/${sid}`)
         if (res.data && Array.isArray(res.data.messages) && res.data.messages.length > 0) {
-          setSessionId(selectedSessionId)
+          setSessionId(sid)
           setMessages(res.data.messages)
-          localStorage.setItem(STORAGE_SESSION_ID, selectedSessionId)
+          localStorage.setItem(STORAGE_SESSION_ID, sid)
           localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data.messages))
         }
       } catch (err) {
