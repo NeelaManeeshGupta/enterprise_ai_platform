@@ -21,11 +21,12 @@ def sync_missing_documents(documents):
 
         for chunk in chunks:
             filename = chunk.get("metadata", {}).get("filename")
+            ws_id = chunk.get("metadata", {}).get("workspace_id", "ws-default")
             if filename:
-                chunks_by_file[filename] = chunks_by_file.get(filename, 0) + 1
+                chunks_by_file[filename] = (chunks_by_file.get(filename, (0, ws_id))[0] + 1, ws_id)
 
         updated = False
-        for filename, count in chunks_by_file.items():
+        for filename, (count, ws_id) in chunks_by_file.items():
             if filename not in existing_filenames:
                 file_ext = filename.split(".")[-1].lower() if "." in filename else "doc"
                 mime = "application/pdf" if file_ext == "pdf" else "application/octet-stream"
@@ -38,6 +39,7 @@ def sync_missing_documents(documents):
                     "chunk_count": count,
                     "category": classification["category"],
                     "processing_strategy": classification["processing_strategy"],
+                    "workspace_id": ws_id,
                     "uploaded_at": str(datetime.now())
                 })
                 updated = True
@@ -67,7 +69,7 @@ def save_documents(documents):
         json.dump(documents, f, indent=2)
 
 
-def add_document(filename, file_type, chunks, category: str = None, strategy: str = None):
+def add_document(filename, file_type, chunks, category: str = None, strategy: str = None, workspace_id: str = "ws-default", user_id: str = "default"):
     documents = load_documents()
 
     if not category:
@@ -75,8 +77,8 @@ def add_document(filename, file_type, chunks, category: str = None, strategy: st
         category = classification["category"]
         strategy = classification["processing_strategy"]
 
-    # Prevent duplicate entries for the same file name
-    documents = [d for d in documents if d["filename"] != filename]
+    # Prevent duplicate entries for the same file name in the same workspace
+    documents = [d for d in documents if not (d["filename"] == filename and d.get("workspace_id", "ws-default") == workspace_id)]
 
     document = {
         "document_id": len(documents) + 1,
@@ -85,6 +87,8 @@ def add_document(filename, file_type, chunks, category: str = None, strategy: st
         "chunk_count": len(chunks),
         "category": category,
         "processing_strategy": strategy,
+        "workspace_id": workspace_id,
+        "user_id": user_id,
         "uploaded_at": str(datetime.now())
     }
 

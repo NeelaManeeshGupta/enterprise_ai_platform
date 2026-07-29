@@ -55,7 +55,7 @@ function MainApp() {
   // Fetch Documents
   async function fetchDocuments() {
     try {
-      const response = await api.get("/documents")
+      const response = await api.get(`/documents?workspace_id=${activeWorkspaceId}`)
       if (response.data && Array.isArray(response.data.documents)) {
         setDocuments(response.data.documents)
       } else {
