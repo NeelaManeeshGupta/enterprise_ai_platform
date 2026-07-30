@@ -11,14 +11,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Cross-Origin Resource Sharing (CORS) Middleware configured for production web browsers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "*"
-    ],
-    allow_credentials=True,
+    allow_origin_regex=".*",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
