@@ -37,7 +37,7 @@ export default function SettingsView({ user, onLogout, activeWorkspaceName = "Ge
     setTestingConnection(true)
     const startTime = performance.now()
     try {
-      const response = await api.get("/health")
+      const response = await api.get("/ping")
       const endTime = performance.now()
       const duration = Math.round(endTime - startTime)
 

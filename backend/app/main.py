@@ -11,13 +11,20 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Cross-Origin Resource Sharing (CORS) Middleware configured for production web browsers
+# Robust Production CORS Policy
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=".*",
+    allow_origins=[
+        "https://maneeshenterpriseai.netlify.app",
+        "https://dainty-pony-87a468.netlify.app",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "*"
+    ],
     allow_credentials=False,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(upload_router)
@@ -30,6 +37,7 @@ app.include_router(workspaces_router)
 def root():
     return {'message': "Backend is running"}
 
+@app.get('/ping')
 @app.get('/health')
 def health():
     return {'status': "healthy"}

@@ -99,7 +99,7 @@ export default function Sidebar({
   useEffect(() => {
     async function checkHealthAndSessions() {
       try {
-        const res = await api.get("/health", { timeout: 15000 })
+        const res = await api.get("/ping", { timeout: 15000 })
         setServerOnline(res.data?.status === "healthy")
         await fetchConversations()
       } catch {
